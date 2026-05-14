@@ -571,15 +571,15 @@
                 ><input id="finalDepth" type="text" value="0.250" />
               </div>
             </div>
-            <div class="hint">
-              Enter positive values. Total Depth is calculated from Start Depth to Final Depth.
-            </div>
+            <div class="hint">Plan how total operation depth is divided into passes.</div>
             <div class="radio-row">
               <label class="radio-card"
-                ><input type="radio" name="passMode" value="equal" checked /> Equal Passes</label
+                ><input type="radio" name="passMode" value="equal" checked /> Equal Depth
+                Passes</label
               >
               <label class="radio-card"
-                ><input type="radio" name="passMode" value="finishlast" /> Finish Last Pass</label
+                ><input type="radio" name="passMode" value="finishlast" /> Leave Final Cleanup
+                Pass</label
               >
             </div>
             <div class="results">
@@ -619,27 +619,23 @@
 
             <div style="height: 12px"></div>
             <div class="section-title" style="font-size: 13px; margin-top: 2px">
-              Operation-aware cleanup
+              Cleanup Planning
             </div>
-            <div class="hint">
-              Start from roughing Depth Per Pass, then adjust for axial (floor) or radial (wall)
-              stock.
-            </div>
+            <div class="hint">Adjust for stock left when reserving a final cleanup pass.</div>
             <div class="grid">
               <div>
-                <label for="cleanupType">Operation Type</label
+                <label for="cleanupType">Cleanup Type</label
                 ><select id="cleanupType">
-                  <option value="rough">Roughing</option>
-                  <option value="floor">Floor cleanup</option>
-                  <option value="wall" selected>Wall cleanup</option>
+                  <option value="axial">Axial Cleanup</option>
+                  <option value="radial" selected>Radial Cleanup</option>
                 </select>
               </div>
               <div>
-                <label for="radialStock">Radial stock to remove</label>
+                <label for="radialStock">Radial Stock to Leave</label>
                 <input id="radialStock" type="text" value="0.0300" />
               </div>
               <div>
-                <label for="floorStock">Axial stock to remove</label>
+                <label for="floorStock">Axial Stock to Leave</label>
                 <input id="floorStock" type="text" value="0.0300" />
               </div>
               <div>
@@ -881,8 +877,8 @@
         const map = [
           ["startDepth", "Start Depth"],
           ["finalDepth", "Final Depth"],
-          ["radialStock", "Radial stock to remove"],
-          ["floorStock", "Axial stock to remove"],
+          ["radialStock", "Radial Stock to Leave"],
+          ["floorStock", "Axial Stock to Leave"],
         ];
         map.forEach(([id, label]) => {
           const el = document.querySelector(`label[for="${id}"]`);
@@ -1149,52 +1145,53 @@
         const cleanupType = $("cleanupType").value;
         const finishMode = $("finishMode").value;
         const radialRaw = parseLenInput($("radialStock").value);
-        const floorRaw = parseLenInput($("floorStock").value);
+        const axialRaw = parseLenInput($("floorStock").value);
         const radialStock = unitMode === "metric" ? mmToIn(radialRaw) : radialRaw;
-        const floorStock = unitMode === "metric" ? mmToIn(floorRaw) : floorRaw;
+        const axialStock = unitMode === "metric" ? mmToIn(axialRaw) : axialRaw;
         const caps = docCaps(base.machineType, base.dia);
         const engagement = !Number.isNaN(radialStock) && base.dia > 0 ? radialStock / base.dia : 0;
-        let suggestedDoc = base.dpp,
+        let suggestedDoc,
           suggestedFeed = base.feed,
           suggestedRpm = base.rpm,
           warning = "",
-          note = "Use roughing values as the baseline.";
-        if (cleanupType === "rough") {
-          suggestedDoc = Math.min(base.dpp, caps.rough);
-          note = "Use roughing values.";
-        } else if (cleanupType === "floor") {
-          suggestedDoc = Math.min(base.finalDepth, Math.max(1.5 * base.dpp, base.dpp), caps.floor);
-          note =
-            "Floor cleanup can often run deeper. Keep spindle speed and feed rate unchanged by default.";
-          if (engagement < 0.1 && finishMode === "aggressive") {
-            suggestedFeed = base.feed * 1.1;
-            note += " Applied a small feed-rate increase for chip thinning.";
-          }
-        } else if (cleanupType === "wall") {
+          note = "";
+        if (cleanupType === "axial") {
+          // Axial cleanup inherits from upper section's finish depth per pass
+          suggestedDoc = base.finishDoc || base.dpp;
+          const passes = 1;
+          note = "Axial cleanup uses the reserved final cleanup pass from Stage 1.5.";
+          // Hide radial-specific outputs
+          $("cleanupEngagementOut").textContent = "";
+          $("cleanupWarning").textContent = "";
+        } else if (cleanupType === "radial") {
+          // Radial cleanup: start from roughing depth per pass, apply scaling
           let mult = base.machineType === "light" ? 1.15 : 1.25;
           if (finishMode === "aggressive") mult += 0.1;
           suggestedDoc = Math.min(base.dpp * mult, base.finalDepth, caps.wall);
           note =
-            "Wall cleanup is semi-finishing by default. Keep spindle speed and feed rate unchanged.";
+            "Radial cleanup is semi-finishing by default. Keep spindle speed and feed rate unchanged.";
           if (engagement < 0.1 && finishMode === "aggressive") {
             suggestedFeed = base.feed * 1.05;
             note += " Applied a very small feed-rate increase for chip thinning.";
           }
-          if (base.finalDepth >= 2.0 * base.dpp)
-            warning = "Full-height wall cleanup may chatter; multiple passes are recommended.";
+          const passes = Math.max(1, Math.ceil(base.finalDepth / Math.max(suggestedDoc, 0.0001)));
+          if (base.finalDepth >= 2.0 * base.dpp) {
+            warning = "Full-height radial cleanup may chatter; multiple passes are recommended.";
+          }
+          // Show radial-specific outputs
+          $("cleanupEngagementOut").textContent = `${(engagement * 100).toFixed(1)}%`;
+          $("cleanupWarning").textContent =
+            warning || "Radial cleanup usually tolerates more depth per pass than axial cleanup.";
         }
-        const passes = Math.max(1, Math.ceil(base.finalDepth / Math.max(suggestedDoc, 0.0001)));
+        const passes =
+          cleanupType === "axial"
+            ? 1
+            : Math.max(1, Math.ceil(base.finalDepth / Math.max(suggestedDoc, 0.0001)));
         $("cleanupDocOut").textContent = displayLen(suggestedDoc);
         $("cleanupPassCountOut").textContent = String(passes);
         $("cleanupFeedOut").textContent = displayFeed(suggestedFeed);
         $("cleanupRpmOut").textContent = `${Math.round(suggestedRpm)} RPM`;
-        $("cleanupEngagementOut").textContent = `${(engagement * 100).toFixed(1)}%`;
         $("cleanupNote").textContent = note;
-        $("cleanupWarning").textContent =
-          warning ||
-          (cleanupType === "floor"
-            ? "Floor cleanup usually tolerates more depth per pass than wall cleanup."
-            : "");
       }
 
       function calc(resetRuntime = false) {
@@ -1238,16 +1235,33 @@
         $("stepOverOut").textContent = displayLen(stepOver);
         $("stepPctOut").textContent = `${stepPct}%`;
         calcPassPlan(dpp);
+        // Calculate finishDoc for cleanup model
+        const startDepth =
+          unitMode === "metric"
+            ? mmToIn(parseLenInput($("startDepth").value))
+            : parseLenInput($("startDepth").value);
+        const finalDepthCalc =
+          unitMode === "metric"
+            ? mmToIn(parseLenInput($("finalDepth").value))
+            : parseLenInput($("finalDepth").value);
+        const totalDepthCalc = Math.max(0, finalDepthCalc - startDepth);
+        const modeSel = document.querySelector('input[name="passMode"]:checked').value;
+        let finishDoc = dpp; // default
+        if (modeSel === "finishlast" && totalDepthCalc > dpp) {
+          const targetFinish = Math.max(
+            Math.min(dpp * 0.4, totalDepthCalc * 0.5),
+            Math.min(dpp * 0.2, totalDepthCalc)
+          );
+          finishDoc = targetFinish;
+        }
         calcCleanupModel({
           dia,
           dpp,
           feed,
           rpm,
           machineType,
-          finalDepth:
-            (unitMode === "metric"
-              ? mmToIn(parseLenInput($("finalDepth").value))
-              : parseLenInput($("finalDepth").value)) || dpp,
+          finalDepth: finalDepthCalc || dpp,
+          finishDoc,
         });
 
         const feedPct = parseFloat($("feedOverride").value) / 100;
@@ -1366,9 +1380,29 @@
           calc(true);
         });
       });
-      document
-        .querySelectorAll('input[name="passMode"]')
-        .forEach((el) => el.addEventListener("change", () => calc(true)));
+      function toggleCleanupVisibility() {
+        const isFinishLast =
+          document.querySelector('input[name="passMode"]:checked').value === "finishlast";
+        const cleanupElements = document.querySelectorAll(
+          '.section-title[style*="font-size: 13px"] ~ .hint, .section-title[style*="font-size: 13px"] ~ .grid, .section-title[style*="font-size: 13px"] ~ .results, .section-title[style*="font-size: 13px"] ~ table'
+        );
+        cleanupElements.forEach((el) => {
+          el.style.display = isFinishLast ? "block" : "none";
+        });
+        // Also hide the spacer
+        const spacer = document.querySelector(
+          '.section-title[style*="font-size: 13px"]'
+        ).previousElementSibling;
+        if (spacer && spacer.style.height === "12px") {
+          spacer.style.display = isFinishLast ? "block" : "none";
+        }
+      }
+      document.querySelectorAll('input[name="passMode"]').forEach((el) =>
+        el.addEventListener("change", () => {
+          toggleCleanupVisibility();
+          calc(true);
+        })
+      );
       ["cleanupType", "finishMode"].forEach((id) =>
         $(id).addEventListener("change", () => calc(true))
       );
@@ -1432,7 +1466,15 @@
           P.forEach(function (id) {
             var el = $(id);
             var v = localStorage.getItem("cstr_" + id);
-            if (el && v !== null) el.value = v;
+            if (el && v !== null) {
+              if (id === "cleanupType") {
+                // Map old values to new
+                if (v === "wall") v = "radial";
+                else if (v === "floor") v = "axial";
+                else if (v === "rough") v = "radial"; // default
+              }
+              el.value = v;
+            }
           });
           // Restore unit and mode FIRST
           var u = localStorage.getItem("cstr_unit");
@@ -1472,6 +1514,7 @@
           saveState();
         };
         restoreState();
+        toggleCleanupVisibility();
       })();
       // Remove duplicate calc(true); here, as restoreState now triggers it
     </script>
