@@ -419,7 +419,7 @@ function updateSummaries(base, tuned){
   $('stage1Summary').textContent = `${$('woodType').selectedOptions[0].textContent} · ${$('geometry').selectedOptions[0].textContent} · ${displayLen(base.dia,4)} · ${displayFeed(base.feed)} @ ${base.rpm} RPM`;
   $('stage2Summary').textContent = `${displayFeed(tuned.feed)} · ${tuned.rpm} RPM · ${displayChip(tuned.chip)}`;
 }
-function resetRuntimeToBaseline(){ $('feedOverride').value = 100; $('rpmTrim').value = 0; }   const PERSIST=['geometry','cutStyle','woodType','machineType','cutterMaterial','cleanupType','finishMode','diameter','flutes','fluteLength','startDepth','finalDepth','radialStock','floorStock','feedOverride','rpmTrim'];   function saveState(){     PERSIST.forEach(id=>{ const el=$(id); if(el) localStorage.setItem('cstr_'+id, el.value); });     localStorage.setItem('cstr_unit', unitMode);     localStorage.setItem('cstr_mode', mode);   }   function restoreState(){     PERSIST.forEach(id=>{ const el=$(id); const v=localStorage.getItem('cstr_'+id); if(el&&v!==null) el.value=v; });     const u=localStorage.getItem('cstr_unit');     if(u==='metric'){ convertLengthInputs('metric'); convertDepthInputs('metric'); unitMode='metric'; setLengthLabels(); displayDepthInputLabel(); updateUnitButtons(); }     const m=localStorage.getItem('cstr_mode');     if(m==='finish'){ mode='finish'; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode)); }   }(){
+function resetRuntimeToBaseline(){
   $('feedOverride').value = 100;
   $('rpmTrim').value = 0;
 }
@@ -565,7 +565,7 @@ function calc(resetRuntime = false){
     `Stepover (%): ${stepPct}%`
   ].join('\n');
 
-  updateSummaries({dia,feed,rpm},{feed:tunedFeed,rpm:tunedRpm,chip:tunedChip}); saveState();
+  updateSummaries({dia,feed,rpm},{feed:tunedFeed,rpm:tunedRpm,chip:tunedChip});
 }
 
 document.querySelectorAll('.section-btn').forEach(btn=>btn.addEventListener('click',()=>{
@@ -620,7 +620,7 @@ $('resetBtn').addEventListener('click',()=>{
 });
 $('toStage2Btn').addEventListener('click',()=>{ setOpen('stage1Panel', false); setOpen('stage2Panel', true); });
 $('copyBtn').addEventListener('click', async ()=>{ try { await navigator.clipboard.writeText($('copyBlock').value); } catch(e){} });
-setLengthLabels(); updateUnitButtons(); restoreState(); calc(true);
+setLengthLabels(); updateUnitButtons(); calc(true);
 </script>
 </body>
 </html>
