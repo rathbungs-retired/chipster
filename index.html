@@ -400,14 +400,10 @@
       <div class="topbar">
         <div>
           <h1>Chipster</h1>
-          <p class="tagline">
-            Chip-load tuning for CNC router speeds and feeds.
-          </p>
+          <p class="tagline">Chip-load tuning for CNC router speeds and feeds.</p>
         </div>
         <div class="header-toggle" aria-label="Display units">
-          <button class="unit-btn active" id="unitImperial" type="button">
-            IN
-          </button>
+          <button class="unit-btn active" id="unitImperial" type="button">IN</button>
           <button class="unit-btn" id="unitMetric" type="button">MM</button>
         </div>
       </div>
@@ -422,9 +418,7 @@
             data-target="stage1Panel"
           >
             <div>
-              <div class="section-title">
-                Stage 1 · Operator inputs and baseline
-              </div>
+              <div class="section-title">Stage 1 · Operator inputs and baseline</div>
               <div class="section-summary" id="stage1Summary">
                 Hardwood · End Mill · 0.250 in · baseline review
               </div>
@@ -495,17 +489,12 @@
             </div>
             <div class="hint">
               Length fields accept decimals, fractions like
-              <span class="mono">1/4</span>, or mixed values like
-              <span class="mono">1 1/8</span>.
+              <span class="mono">1/4</span>, or mixed values like <span class="mono">1 1/8</span>.
             </div>
 
             <div class="actions">
-              <button class="primary" id="calcBtn" type="button">
-                Calculate baseline
-              </button>
-              <button class="secondary" id="resetBtn" type="button">
-                Reset
-              </button>
+              <button class="primary" id="calcBtn" type="button">Calculate baseline</button>
+              <button class="secondary" id="resetBtn" type="button">Reset</button>
               <button class="secondary" id="toStage2Btn" type="button">
                 Use baseline and tune
               </button>
@@ -580,17 +569,14 @@
               </div>
             </div>
             <div class="hint">
-              Enter positive values. Total Depth is calculated from Start Depth
-              to Final Depth.
+              Enter positive values. Total Depth is calculated from Start Depth to Final Depth.
             </div>
             <div class="radio-row">
               <label class="radio-card"
-                ><input type="radio" name="passMode" value="equal" checked />
-                Equal Passes</label
+                ><input type="radio" name="passMode" value="equal" checked /> Equal Passes</label
               >
               <label class="radio-card"
-                ><input type="radio" name="passMode" value="finishlast" />
-                Finish Last Pass</label
+                ><input type="radio" name="passMode" value="finishlast" /> Finish Last Pass</label
               >
             </div>
             <div class="results">
@@ -633,7 +619,8 @@
               Operation-aware cleanup
             </div>
             <div class="hint">
-              Start from roughing Depth Per Pass, then adjust for axial (floor) or radial (wall) stock.
+              Start from roughing Depth Per Pass, then adjust for axial (floor) or radial (wall)
+              stock.
             </div>
             <div class="grid">
               <div>
@@ -717,33 +704,17 @@
             <div class="tune-shell">
               <div class="slider-row">
                 <div class="slider-head">
-                  <label for="feedOverride" style="margin: 0"
-                    >Feed override</label
-                  >
+                  <label for="feedOverride" style="margin: 0">Feed override</label>
                   <span class="pill">Primary live control</span>
                 </div>
-                <input
-                  id="feedOverride"
-                  type="range"
-                  min="70"
-                  max="170"
-                  step="5"
-                  value="100"
-                />
+                <input id="feedOverride" type="range" min="70" max="170" step="5" value="100" />
               </div>
               <div class="slider-row" style="margin-bottom: 0">
                 <div class="slider-head">
                   <label for="rpmTrim" style="margin: 0">RPM trim</label>
                   <span class="pill">Manual spindle ref</span>
                 </div>
-                <input
-                  id="rpmTrim"
-                  type="range"
-                  min="-4000"
-                  max="4000"
-                  step="250"
-                  value="0"
-                />
+                <input id="rpmTrim" type="range" min="-4000" max="4000" step="250" value="0" />
               </div>
             </div>
 
@@ -816,8 +787,7 @@
             <div>
               <div class="section-title">Entry text</div>
               <div class="section-summary">
-                Copyable baseline values with advisory Depth Per Pass and
-                stepover
+                Copyable baseline values with advisory Depth Per Pass and stepover
               </div>
             </div>
             <div class="chev">›</div>
@@ -825,9 +795,7 @@
           <div class="section-body" id="entryBody">
             <textarea id="copyBlock" spellcheck="false"></textarea>
             <div class="actions">
-              <button class="primary" id="copyBtn" type="button">
-                Copy text
-              </button>
+              <button class="primary" id="copyBtn" type="button">Copy text</button>
             </div>
           </div>
         </section>
@@ -919,8 +887,7 @@
         });
       }
       function setLengthLabels() {
-        document.querySelector('label[for="diameter"]').textContent =
-          `Diameter (${lenUnit()})`;
+        document.querySelector('label[for="diameter"]').textContent = `Diameter (${lenUnit()})`;
         document.querySelector('label[for="fluteLength"]').textContent =
           `Flute Length (${lenUnit()})`;
       }
@@ -931,8 +898,7 @@
         const raw = parseLenInput(el.value);
         if (Number.isNaN(raw) || raw < 0) return;
         const inches = unitMode === "metric" ? mmToIn(raw) : raw;
-        el.value =
-          unitMode === "metric" ? inToMm(inches).toFixed(3) : inches.toFixed(4);
+        el.value = unitMode === "metric" ? inToMm(inches).toFixed(3) : inches.toFixed(4);
       }
 
       function normalizeLengthField(id) {
@@ -940,22 +906,17 @@
         const raw = parseLenInput(el.value);
         if (Number.isNaN(raw) || raw <= 0) return;
         const inches = unitMode === "metric" ? mmToIn(raw) : raw;
-        el.value =
-          unitMode === "metric" ? inToMm(inches).toFixed(3) : inches.toFixed(4);
+        el.value = unitMode === "metric" ? inToMm(inches).toFixed(3) : inches.toFixed(4);
       }
       function convertDepthInputs(toMode) {
-        ["startDepth", "finalDepth", "radialStock", "floorStock"].forEach(
-          (id) => {
-            const el = $(id);
-            if (!el) return;
-            const current = parseLenInput(el.value);
-            if (Number.isNaN(current)) return;
-            if (toMode === "metric" && unitMode === "imperial")
-              el.value = inToMm(current).toFixed(3);
-            if (toMode === "imperial" && unitMode === "metric")
-              el.value = mmToIn(current).toFixed(4);
-          },
-        );
+        ["startDepth", "finalDepth", "radialStock", "floorStock"].forEach((id) => {
+          const el = $(id);
+          if (!el) return;
+          const current = parseLenInput(el.value);
+          if (Number.isNaN(current)) return;
+          if (toMode === "metric" && unitMode === "imperial") el.value = inToMm(current).toFixed(3);
+          if (toMode === "imperial" && unitMode === "metric") el.value = mmToIn(current).toFixed(4);
+        });
       }
 
       function convertLengthInputs(toMode) {
@@ -963,10 +924,8 @@
           const el = $(id);
           const current = parseLenInput(el.value);
           if (Number.isNaN(current)) return;
-          if (toMode === "metric" && unitMode === "imperial")
-            el.value = inToMm(current).toFixed(3);
-          if (toMode === "imperial" && unitMode === "metric")
-            el.value = mmToIn(current).toFixed(4);
+          if (toMode === "metric" && unitMode === "imperial") el.value = inToMm(current).toFixed(3);
+          if (toMode === "imperial" && unitMode === "metric") el.value = mmToIn(current).toFixed(4);
         });
       }
 
@@ -983,11 +942,7 @@
         return machine === "light" ? 0.85 : 1.0;
       }
       function geometryFactor(geometry) {
-        return (
-          { endmill: 1.0, bowltray: 1.18, ballmill: 0.82, surfacing: 1.25 }[
-            geometry
-          ] || 1.0
-        );
+        return { endmill: 1.0, bowltray: 1.18, ballmill: 0.82, surfacing: 1.25 }[geometry] || 1.0;
       }
       function cutStyleFactor(style) {
         return (
@@ -1003,14 +958,7 @@
       function finishFactor(mode) {
         return mode === "roughing" ? 1.0 : 0.78;
       }
-      function chiploadFor(
-        dia,
-        geometry,
-        cutStyle,
-        mode,
-        woodType,
-        machineType,
-      ) {
+      function chiploadFor(dia, geometry, cutStyle, mode, woodType, machineType) {
         let chip;
         if (dia <= 0.0625) chip = 0.001;
         else if (dia <= 0.125) chip = 0.0016;
@@ -1037,12 +985,9 @@
       function dppFor(dia, geometry, mode, woodType, machineType) {
         let ratio;
         if (geometry === "endmill") ratio = mode === "roughing" ? 0.42 : 0.18;
-        else if (geometry === "ballmill")
-          ratio = mode === "roughing" ? 0.24 : 0.1;
-        else if (geometry === "bowltray")
-          ratio = mode === "roughing" ? 0.3 : 0.12;
-        else if (geometry === "surfacing")
-          return mode === "roughing" ? 0.06 : 0.03;
+        else if (geometry === "ballmill") ratio = mode === "roughing" ? 0.24 : 0.1;
+        else if (geometry === "bowltray") ratio = mode === "roughing" ? 0.3 : 0.12;
+        else if (geometry === "surfacing") return mode === "roughing" ? 0.06 : 0.03;
         else ratio = mode === "roughing" ? 0.32 : 0.14;
         if (woodType === "hardwood") ratio *= 0.92;
         if (machineType === "light") ratio *= 0.92;
@@ -1104,9 +1049,7 @@
       function setOpen(panelId, open) {
         const panel = $(panelId);
         panel.dataset.open = open ? "true" : "false";
-        panel
-          .querySelector(".section-btn")
-          .setAttribute("aria-expanded", open ? "true" : "false");
+        panel.querySelector(".section-btn").setAttribute("aria-expanded", open ? "true" : "false");
       }
       function updateUnitButtons() {
         $("unitImperial").classList.toggle("active", unitMode === "imperial");
@@ -1128,11 +1071,7 @@
         const finalRaw = parseLenInput($("finalDepth").value);
         const startDepth = unitMode === "metric" ? mmToIn(startRaw) : startRaw;
         const finalDepth = unitMode === "metric" ? mmToIn(finalRaw) : finalRaw;
-        if (
-          Number.isNaN(startDepth) ||
-          Number.isNaN(finalDepth) ||
-          finalDepth < startDepth
-        ) {
+        if (Number.isNaN(startDepth) || Number.isNaN(finalDepth) || finalDepth < startDepth) {
           $("totalDepthOut").textContent = displayLen(0);
           $("passCountOut").textContent = "0";
           $("equalDocOut").textContent = displayLen(0);
@@ -1141,8 +1080,7 @@
           $("mmDocOut").textContent = displayLen(0);
           $("passPlanNote").textContent =
             "Enter Start Depth and Final Depth with Final Depth greater than or equal to Start Depth.";
-          $("passSummary").textContent =
-            "Equal-pass planning for operation depth";
+          $("passSummary").textContent = "Equal-pass planning for operation depth";
           return;
         }
         const totalDepth = Math.max(0, finalDepth - startDepth);
@@ -1158,9 +1096,7 @@
           $("passSummary").textContent = "0 passes across 0 depth";
           return;
         }
-        const modeSel = document.querySelector(
-          'input[name="passMode"]:checked',
-        ).value;
+        const modeSel = document.querySelector('input[name="passMode"]:checked').value;
         const equalPasses = Math.max(1, Math.ceil(totalDepth / dpp));
         const equalDoc = totalDepth / equalPasses;
         let roughDoc = equalDoc,
@@ -1171,12 +1107,11 @@
         if (modeSel === "finishlast" && totalDepth > dpp) {
           const targetFinish = Math.max(
             Math.min(dpp * 0.4, totalDepth * 0.5),
-            Math.min(dpp * 0.2, totalDepth),
+            Math.min(dpp * 0.2, totalDepth)
           );
           const roughableDepth = Math.max(0, totalDepth - targetFinish);
           const roughPasses = Math.max(1, Math.floor(roughableDepth / dpp));
-          roughDoc =
-            roughPasses > 0 ? roughableDepth / roughPasses : roughableDepth;
+          roughDoc = roughPasses > 0 ? roughableDepth / roughPasses : roughableDepth;
           finishDoc = totalDepth - roughDoc * roughPasses;
           if (finishDoc <= 0) {
             roughDoc = equalDoc;
@@ -1198,8 +1133,7 @@
         $("finishDocOut").textContent = displayLen(finishDoc);
         $("mmDocOut").textContent = displayLen(mmDoc);
         $("passPlanNote").textContent = note;
-        $("passSummary").textContent =
-          `${passCount} passes across ${displayLen(totalDepth)}`;
+        $("passSummary").textContent = `${passCount} passes across ${displayLen(totalDepth)}`;
       }
 
       function docCaps(machineType, dia) {
@@ -1213,14 +1147,10 @@
         const finishMode = $("finishMode").value;
         const radialRaw = parseLenInput($("radialStock").value);
         const floorRaw = parseLenInput($("floorStock").value);
-        const radialStock =
-          unitMode === "metric" ? mmToIn(radialRaw) : radialRaw;
+        const radialStock = unitMode === "metric" ? mmToIn(radialRaw) : radialRaw;
         const floorStock = unitMode === "metric" ? mmToIn(floorRaw) : floorRaw;
         const caps = docCaps(base.machineType, base.dia);
-        const engagement =
-          !Number.isNaN(radialStock) && base.dia > 0
-            ? radialStock / base.dia
-            : 0;
+        const engagement = !Number.isNaN(radialStock) && base.dia > 0 ? radialStock / base.dia : 0;
         let suggestedDoc = base.dpp,
           suggestedFeed = base.feed,
           suggestedRpm = base.rpm,
@@ -1230,11 +1160,7 @@
           suggestedDoc = Math.min(base.dpp, caps.rough);
           note = "Use roughing values.";
         } else if (cleanupType === "floor") {
-          suggestedDoc = Math.min(
-            base.finalDepth,
-            Math.max(1.5 * base.dpp, base.dpp),
-            caps.floor,
-          );
+          suggestedDoc = Math.min(base.finalDepth, Math.max(1.5 * base.dpp, base.dpp), caps.floor);
           note =
             "Floor cleanup can often run deeper. Keep spindle speed and feed rate unchanged by default.";
           if (engagement < 0.1 && finishMode === "aggressive") {
@@ -1249,23 +1175,17 @@
             "Wall cleanup is semi-finishing by default. Keep spindle speed and feed rate unchanged.";
           if (engagement < 0.1 && finishMode === "aggressive") {
             suggestedFeed = base.feed * 1.05;
-            note +=
-              " Applied a very small feed-rate increase for chip thinning.";
+            note += " Applied a very small feed-rate increase for chip thinning.";
           }
           if (base.finalDepth >= 2.0 * base.dpp)
-            warning =
-              "Full-height wall cleanup may chatter; multiple passes are recommended.";
+            warning = "Full-height wall cleanup may chatter; multiple passes are recommended.";
         }
-        const passes = Math.max(
-          1,
-          Math.ceil(base.finalDepth / Math.max(suggestedDoc, 0.0001)),
-        );
+        const passes = Math.max(1, Math.ceil(base.finalDepth / Math.max(suggestedDoc, 0.0001)));
         $("cleanupDocOut").textContent = displayLen(suggestedDoc);
         $("cleanupPassCountOut").textContent = String(passes);
         $("cleanupFeedOut").textContent = displayFeed(suggestedFeed);
         $("cleanupRpmOut").textContent = `${Math.round(suggestedRpm)} RPM`;
-        $("cleanupEngagementOut").textContent =
-          `${(engagement * 100).toFixed(1)}%`;
+        $("cleanupEngagementOut").textContent = `${(engagement * 100).toFixed(1)}%`;
         $("cleanupNote").textContent = note;
         $("cleanupWarning").textContent =
           warning ||
@@ -1278,8 +1198,7 @@
         const diaRaw = parseLenInput($("diameter").value);
         const fluteLenRaw = parseLenInput($("fluteLength").value);
         const dia = unitMode === "metric" ? mmToIn(diaRaw) : diaRaw;
-        const fluteLength =
-          unitMode === "metric" ? mmToIn(fluteLenRaw) : fluteLenRaw;
+        const fluteLength = unitMode === "metric" ? mmToIn(fluteLenRaw) : fluteLenRaw;
         const flutes = parseFloat($("flutes").value) || 2;
         const geometry = $("geometry").value;
         const cutStyle = $("cutStyle").value;
@@ -1287,34 +1206,19 @@
         const cutterMaterial = $("cutterMaterial").value;
         const machineType = $("machineType").value;
 
-        if (
-          Number.isNaN(dia) ||
-          Number.isNaN(fluteLength) ||
-          dia <= 0 ||
-          fluteLength <= 0
-        ) {
+        if (Number.isNaN(dia) || Number.isNaN(fluteLength) || dia <= 0 || fluteLength <= 0) {
           return;
         }
 
-        const chip = chiploadFor(
-          dia,
-          geometry,
-          cutStyle,
-          mode,
-          woodType,
-          machineType,
-        );
+        const chip = chiploadFor(dia, geometry, cutStyle, mode, woodType, machineType);
         const rpm = rpmFromModel(dia, woodType, cutterMaterial, geometry);
         const feed = rpm * flutes * chip * machineFactor(machineType);
         const plunge = Math.max(
           unitMode === "metric" ? 150 : 8,
-          feed * (mode === "roughing" ? 0.3 : 0.22),
+          feed * (mode === "roughing" ? 0.3 : 0.22)
         );
         const ramp = plunge * (mode === "roughing" ? 0.68 : 0.58);
-        const dpp = Math.min(
-          dppFor(dia, geometry, mode, woodType, machineType),
-          fluteLength * 0.8,
-        );
+        const dpp = Math.min(dppFor(dia, geometry, mode, woodType, machineType), fluteLength * 0.8);
         const stepPct = stepoverPctFor(geometry, mode);
         const stepOver = dia * (stepPct / 100);
         const rampAngle = rampAngleFor(geometry, mode);
@@ -1364,16 +1268,9 @@
         $("tunedStepPctOut").textContent = `${tunedStepPct}%`;
         $("feedOverrideOut").textContent = Math.round(feedPct * 100) + "%";
 
-        const [color, chipText, heatText, note] = tunedStatus(
-          tunedChip,
-          dia,
-          machineType,
-        );
+        const [color, chipText, heatText, note] = tunedStatus(tunedChip, dia, machineType);
         $("chipStatus").innerHTML = statusPill(color, chipText);
-        $("heatStatus").innerHTML = statusPill(
-          color === "green" ? "green" : color,
-          heatText,
-        );
+        $("heatStatus").innerHTML = statusPill(color === "green" ? "green" : color, heatText);
         $("tuneNote").textContent = note;
 
         $("copyBlock").value = [
@@ -1398,10 +1295,7 @@
           `Stepover (%): ${stepPct}%`,
         ].join("\n");
 
-        updateSummaries(
-          { dia, feed, rpm },
-          { feed: tunedFeed, rpm: tunedRpm, chip: tunedChip },
-        );
+        updateSummaries({ dia, feed, rpm }, { feed: tunedFeed, rpm: tunedRpm, chip: tunedChip });
       }
 
       document.querySelectorAll(".section-btn").forEach((btn) =>
@@ -1410,18 +1304,16 @@
           const panel = $(panelId);
           const open = panel.dataset.open === "true";
           setOpen(panelId, !open);
-        }),
+        })
       );
       document.querySelectorAll(".tab").forEach((btn) =>
         btn.addEventListener("click", () => {
           mode = btn.dataset.mode;
           document
             .querySelectorAll(".tab")
-            .forEach((b) =>
-              b.classList.toggle("active", b.dataset.mode === mode),
-            );
+            .forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
           calc();
-        }),
+        })
       );
       $("unitImperial").addEventListener("click", () => {
         if (unitMode === "imperial") return;
@@ -1443,17 +1335,12 @@
         updateUnitButtons();
         calc(true);
       });
-      [
-        "geometry",
-        "flutes",
-        "cutStyle",
-        "woodType",
-        "machineType",
-        "cutterMaterial",
-      ].forEach((id) => {
-        $(id).addEventListener("input", () => calc(true));
-        $(id).addEventListener("change", () => calc(true));
-      });
+      ["geometry", "flutes", "cutStyle", "woodType", "machineType", "cutterMaterial"].forEach(
+        (id) => {
+          $(id).addEventListener("input", () => calc(true));
+          $(id).addEventListener("change", () => calc(true));
+        }
+      );
       ["diameter", "fluteLength"].forEach((id) => {
         $(id).addEventListener("input", () => calc(true));
         $(id).addEventListener("change", () => {
@@ -1465,24 +1352,22 @@
           calc(true);
         });
       });
-      ["startDepth", "finalDepth", "radialStock", "floorStock"].forEach(
-        (id) => {
-          $(id).addEventListener("input", () => calc(true));
-          $(id).addEventListener("change", () => {
-            normalizeDepthField(id);
-            calc(true);
-          });
-          $(id).addEventListener("blur", () => {
-            normalizeDepthField(id);
-            calc(true);
-          });
-        },
-      );
+      ["startDepth", "finalDepth", "radialStock", "floorStock"].forEach((id) => {
+        $(id).addEventListener("input", () => calc(true));
+        $(id).addEventListener("change", () => {
+          normalizeDepthField(id);
+          calc(true);
+        });
+        $(id).addEventListener("blur", () => {
+          normalizeDepthField(id);
+          calc(true);
+        });
+      });
       document
         .querySelectorAll('input[name="passMode"]')
         .forEach((el) => el.addEventListener("change", () => calc(true)));
       ["cleanupType", "finishMode"].forEach((id) =>
-        $(id).addEventListener("change", () => calc(true)),
+        $(id).addEventListener("change", () => calc(true))
       );
       $("feedOverride").addEventListener("input", () => calc(false));
       $("feedOverride").addEventListener("change", () => calc(false));
@@ -1495,9 +1380,7 @@
         mode = "roughing";
         document
           .querySelectorAll(".tab")
-          .forEach((b) =>
-            b.classList.toggle("active", b.dataset.mode === mode),
-          );
+          .forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
         setLengthLabels();
         displayDepthInputLabel();
         updateUnitButtons();
