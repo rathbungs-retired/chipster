@@ -1,0 +1,1579 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chipster</title>
+    <link rel="icon" href="./favicon.ico?v=2" sizes="any" />
+    <link rel="shortcut icon" href="./favicon.ico?v=2" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2" />
+    <style>
+      :root {
+        --bg: #edf2f7;
+        --panel: #f8fafc;
+        --panel-2: #ebf1f7;
+        --text: #243248;
+        --muted: #6a7a90;
+        --line: #ced8e4;
+        --blue: #5f95d7;
+        --blue-2: #8db3e3;
+        --blue-3: #3e6c9f;
+        --green: #2e9a58;
+        --yellow: #c88915;
+        --red: #c44b4b;
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        background: linear-gradient(180deg, #edf2f7, #e8edf3);
+        color: var(--text);
+        line-height: 1.45;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 10px 12px 14px;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(1.35rem, 1.08rem + 1vw, 1.75rem);
+        line-height: 1.1;
+      }
+      p {
+        margin: 0 0 10px;
+        color: var(--muted);
+      }
+      .tagline {
+        margin: 4px 0 10px;
+        font-size: 0.92rem;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .header-toggle {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+      }
+      .section-btn {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 13px 14px;
+        border: none;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+      }
+      .section-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-summary {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .chev {
+        font-size: 1.1rem;
+        color: var(--blue-3);
+        transform: rotate(0deg);
+        transition: transform 0.18s ease;
+      }
+      .panel[data-open="true"] .chev {
+        transform: rotate(90deg);
+      }
+      .section-body {
+        padding: 0 14px 14px;
+        display: none;
+      }
+      .panel[data-open="true"] .section-body {
+        display: block;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 0 0 14px;
+      }
+      .tab,
+      .unit-btn {
+        padding: 9px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        cursor: pointer;
+      }
+      .header-toggle .unit-btn {
+        padding: 7px 10px;
+        min-width: 48px;
+        font-size: 0.84rem;
+        font-weight: 700;
+      }
+      .tab.active,
+      .unit-btn.active {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+      }
+      label {
+        display: block;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+        color: #435671;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--text);
+        font-size: 1rem;
+      }
+      .subtle {
+        font-size: 0.86rem;
+        color: var(--muted);
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      button.primary,
+      button.secondary {
+        border: none;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      button.primary {
+        background: var(--blue);
+        color: #fff;
+      }
+      button.secondary {
+        background: #fff;
+        color: var(--text);
+        border: 1px solid var(--line);
+      }
+      .results {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .metric {
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px;
+      }
+      .metric .k {
+        font-size: 0.75rem;
+        line-height: 1.2;
+        color: var(--muted);
+      }
+      .metric .v {
+        margin-top: 3px;
+        font-size: 1rem;
+        line-height: 1.2;
+        font-weight: 700;
+        color: var(--blue-3);
+      }
+      .tune-shell {
+        background: linear-gradient(180deg, #f4f7fb, #edf3f9);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .slider-row {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .slider-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid var(--line);
+        font-size: 0.8rem;
+        color: #49617d;
+      }
+      .light {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .green {
+        background: var(--green);
+      }
+      .yellow {
+        background: var(--yellow);
+      }
+      .red {
+        background: var(--red);
+      }
+      input[type="range"] {
+        appearance: none;
+        background: transparent;
+        padding: 0;
+        border: none;
+      }
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        padding: 0;
+        border: none;
+        height: 28px;
+      }
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: 10px;
+        background: #bcd0e8;
+        border-radius: 999px;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #fff;
+        border: 3px solid var(--blue);
+        margin-top: -7px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      }
+      input[type="range"]::-moz-range-track {
+        height: 10px;
+        background: #bcd0e8;
+        border-radius: 999px;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #fff;
+        border: 3px solid var(--blue);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 14px;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 8px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      textarea {
+        min-height: 170px;
+        font:
+          13px/1.4 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Monaco,
+          monospace;
+      }
+      .radio-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 0 0 14px;
+      }
+      .radio-card {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--panel-2);
+        cursor: pointer;
+      }
+      .radio-card input {
+        width: auto;
+        margin: 0;
+      }
+      .inline-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0 0 14px;
+      }
+      .hint {
+        font-size: 0.76rem;
+        line-height: 1.35;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+      }
+      .hidden {
+        display: none !important;
+      }
+      @media (max-width: 600px) {
+        .wrap {
+          padding: 8px 10px 12px;
+        }
+        .topbar {
+          margin-bottom: 8px;
+          align-items: center;
+        }
+        .tagline {
+          margin: 3px 0 0;
+          font-size: 0.88rem;
+          max-width: 26ch;
+        }
+        .section-btn {
+          padding: 12px;
+        }
+        .section-body {
+          padding: 0 12px 12px;
+        }
+        .results {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+          margin-top: 10px;
+        }
+        .metric {
+          padding: 9px;
+        }
+        .metric .k {
+          font-size: 0.72rem;
+        }
+        .metric .v {
+          font-size: 0.98rem;
+        }
+        .header-toggle .unit-btn {
+          min-width: 42px;
+          padding: 6px 9px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div>
+          <h1>Chipster</h1>
+          <p class="tagline">Chip-load tuning for CNC router speeds and feeds.</p>
+        </div>
+        <div class="header-toggle" aria-label="Display units">
+          <button class="unit-btn active" id="unitImperial" type="button">IN</button>
+          <button class="unit-btn" id="unitMetric" type="button">MM</button>
+        </div>
+      </div>
+
+      <div class="stack">
+        <section class="panel" id="stage1Panel" data-open="true">
+          <button
+            class="section-btn"
+            type="button"
+            aria-expanded="true"
+            aria-controls="stage1Body"
+            data-target="stage1Panel"
+          >
+            <div>
+              <div class="section-title">Stage 1 · Operator inputs and baseline</div>
+              <div class="section-summary" id="stage1Summary">
+                Hardwood · End Mill · 0.250 in · baseline review
+              </div>
+            </div>
+            <div class="chev">›</div>
+          </button>
+          <div class="section-body" id="stage1Body">
+            <div class="tabs">
+              <button class="tab active" data-mode="roughing">Roughing</button>
+              <button class="tab" data-mode="finishing">Finish</button>
+            </div>
+
+            <div class="grid">
+              <div>
+                <label for="geometry">Geometry</label
+                ><select id="geometry">
+                  <option value="endmill" selected>End Mill</option>
+                  <option value="bowltray">Bowl / Tray Bit</option>
+                  <option value="ballmill">Ball End Mill</option>
+                  <option value="surfacing">Surfacing Bit</option>
+                </select>
+              </div>
+              <div>
+                <label for="diameter">Diameter</label
+                ><input id="diameter" type="text" value="0.250" />
+              </div>
+              <div>
+                <label for="flutes"># of Flutes</label
+                ><input id="flutes" type="number" step="1" value="2" />
+              </div>
+              <div>
+                <label for="fluteLength">Flute Length</label
+                ><input id="fluteLength" type="text" value="0.500" />
+              </div>
+              <div>
+                <label for="cutStyle">Cutting Style</label
+                ><select id="cutStyle">
+                  <option value="neutral" selected>Neutral / N-A</option>
+                  <option value="upcut">Upcut</option>
+                  <option value="downcut">Downcut</option>
+                  <option value="compression">Compression</option>
+                  <option value="straight">Straight</option>
+                </select>
+              </div>
+              <div>
+                <label for="woodType">Wood Type</label
+                ><select id="woodType">
+                  <option value="hardwood" selected>Hardwood</option>
+                  <option value="softwood">Softwood</option>
+                  <option value="plywood">Plywood</option>
+                  <option value="mdf">MDF</option>
+                </select>
+              </div>
+              <div>
+                <label for="machineType">Machine</label
+                ><select id="machineType">
+                  <option value="light" selected>Light hobby</option>
+                  <option value="stiff">Stiff hobby / prosumer</option>
+                </select>
+              </div>
+              <div>
+                <label for="cutterMaterial">Cutter Material</label
+                ><select id="cutterMaterial">
+                  <option value="carbide" selected>Carbide</option>
+                  <option value="hss">HSS</option>
+                </select>
+              </div>
+            </div>
+            <div class="hint">
+              Length fields accept decimals, fractions like
+              <span class="mono">1/4</span>, or mixed values like <span class="mono">1 1/8</span>.
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="calcBtn" type="button">Calculate baseline</button>
+              <button class="secondary" id="resetBtn" type="button">Reset</button>
+              <button class="secondary" id="toStage2Btn" type="button">
+                Use baseline and tune
+              </button>
+            </div>
+
+            <div class="results">
+              <div class="metric">
+                <div class="k">Feed Rate</div>
+                <div class="v" id="feedOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Plunge Rate</div>
+                <div class="v" id="plungeOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Ramp Feed</div>
+                <div class="v" id="rampOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Ramp Angle</div>
+                <div class="v" id="rampAngleOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Spindle Speed</div>
+                <div class="v" id="rpmOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Chip Load</div>
+                <div class="v" id="chipOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Depth Per Pass</div>
+                <div class="v" id="dppOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Stepover</div>
+                <div class="v" id="stepOverOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Stepover (%)</div>
+                <div class="v" id="stepPctOut">0</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="stagePassPanel" data-open="false">
+          <button
+            class="section-btn"
+            type="button"
+            aria-expanded="false"
+            aria-controls="stagePassBody"
+            data-target="stagePassPanel"
+          >
+            <div>
+              <div class="section-title">Stage 1.5 · Pass planning</div>
+              <div class="section-summary" id="passSummary">
+                Equal-pass planning for operation depth
+              </div>
+            </div>
+            <div class="chev">›</div>
+          </button>
+          <div class="section-body" id="stagePassBody">
+            <div class="grid">
+              <div>
+                <label for="targetDepth">Target Depth</label
+                ><input id="targetDepth" type="text" value="0.250" />
+              </div>
+            </div>
+            <input id="startDepth" type="hidden" value="0.000" />
+            <input id="finalDepth" type="hidden" value="0.250" />
+            <div class="hint">Plan how total operation depth is divided into passes.</div>
+            <div class="radio-row">
+              <label class="radio-card"
+                ><input type="radio" name="passMode" value="equal" checked /> Equal Depth Passes</label
+              >
+              <label class="radio-card"
+                ><input type="radio" name="passMode" value="finishlast" /> Equal Roughing Passes + Finish Pass</label
+              >
+            </div>
+            <div class="results">
+              <div class="metric hidden" id="cardTotalDepth">
+                <div class="k">Total Depth</div>
+                <div class="v" id="totalDepthOut">0</div>
+              </div>
+              <div class="metric" id="cardPassCount">
+                <div class="k">Pass Count</div>
+                <div class="v" id="passCountOut">0</div>
+              </div>
+              <div class="metric" id="cardEqualDoc">
+                <div class="k">Equal Depth Per Pass</div>
+                <div class="v" id="equalDocOut">0</div>
+              </div>
+              <div class="metric hidden" id="cardRoughDoc">
+                <div class="k">Roughing Depth Per Pass</div>
+                <div class="v" id="roughDocOut">0</div>
+              </div>
+              <div class="metric hidden" id="cardFinishDoc">
+                <div class="k">Finish Depth Per Pass</div>
+                <div class="v" id="finishDocOut">0</div>
+              </div>
+              <div class="metric hidden" id="cardRecommendedDoc">
+                <div class="k">Recommended Depth Per Pass</div>
+                <div class="v" id="mmDocOut">0</div>
+              </div>
+            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Planning note</th>
+                  <td id="passPlanNote"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="height: 12px"></div>
+            <div class="section-title" style="font-size: 13px; margin-top: 2px">
+              Cleanup Planning
+            </div>
+            <div class="hint">Adjust for stock left when reserving a final cleanup pass.</div>
+            <div class="grid">
+              <div>
+                <label for="cleanupType">Cleanup Type</label
+                ><select id="cleanupType">
+                  <option value="axial">Axial Cleanup</option>
+                  <option value="radial" selected>Radial Cleanup</option>
+                </select>
+              </div>
+              <div>
+                <label for="radialStock">Suggested Radial Stock to Leave</label>
+                <input id="radialStock" type="text" value="0.0300" />
+              </div>
+              <div>
+                <label for="floorStock">Reserved Finish Pass Depth</label>
+                <input id="floorStock" type="text" value="0.0300" readonly />
+              </div>
+              <div>
+                <label for="finishMode">Finish mode</label
+                ><select id="finishMode">
+                  <option value="normal" selected>Normal</option>
+                  <option value="aggressive">Aggressive</option>
+                </select>
+              </div>
+            </div>
+            <div class="results">
+              <div class="metric">
+                <div class="k">Recommended Cleanup Depth Per Pass</div>
+                <div class="v" id="cleanupDocOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Cleanup Pass Count</div>
+                <div class="v" id="cleanupPassCountOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Recommended Feed Rate</div>
+                <div class="v" id="cleanupFeedOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Recommended Spindle Speed</div>
+                <div class="v" id="cleanupRpmOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Radial Engagement (%)</div>
+                <div class="v" id="cleanupEngagementOut">0</div>
+              </div>
+            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Cleanup note</th>
+                  <td id="cleanupNote"></td>
+                </tr>
+                <tr>
+                  <th>Cleanup warning</th>
+                  <td id="cleanupWarning"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="stage2Panel" data-open="false">
+          <button
+            class="section-btn"
+            type="button"
+            aria-expanded="false"
+            aria-controls="stage2Body"
+            data-target="stage2Panel"
+          >
+            <div>
+              <div class="section-title">Stage 2 · Runtime tuning</div>
+              <div class="section-summary" id="stage2Summary">
+                Feed override and spindle trim preview
+              </div>
+            </div>
+            <div class="chev">›</div>
+          </button>
+          <div class="section-body" id="stage2Body">
+            <div class="tune-shell">
+              <div class="slider-row">
+                <div class="slider-head">
+                  <label for="feedOverride" style="margin: 0">Feed override</label>
+                  <span class="pill">Primary live control</span>
+                </div>
+                <input id="feedOverride" type="range" min="70" max="170" step="5" value="100" />
+              </div>
+              <div class="slider-row" style="margin-bottom: 0">
+                <div class="slider-head">
+                  <label for="rpmTrim" style="margin: 0">RPM trim</label>
+                  <span class="pill">Manual spindle ref</span>
+                </div>
+                <input id="rpmTrim" type="range" min="-4000" max="4000" step="250" value="0" />
+              </div>
+            </div>
+
+            <div class="results">
+              <div class="metric">
+                <div class="k">Feed Rate</div>
+                <div class="v" id="tunedFeedOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Plunge Rate</div>
+                <div class="v" id="tunedPlungeOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Ramp Feed</div>
+                <div class="v" id="tunedRampOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Ramp Angle</div>
+                <div class="v" id="tunedRampAngleOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Spindle Speed</div>
+                <div class="v" id="tunedRpmOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Chip Load</div>
+                <div class="v" id="tunedChipOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Stepover</div>
+                <div class="v" id="tunedStepOverOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Stepover (%)</div>
+                <div class="v" id="tunedStepPctOut">0</div>
+              </div>
+              <div class="metric">
+                <div class="k">Override</div>
+                <div class="v" id="feedOverrideOut">100%</div>
+              </div>
+            </div>
+
+            <table>
+              <tbody>
+                <tr>
+                  <th>Chip load status</th>
+                  <td id="chipStatus"></td>
+                </tr>
+                <tr>
+                  <th>Heat / rubbing risk</th>
+                  <td id="heatStatus"></td>
+                </tr>
+                <tr>
+                  <th>Tuning note</th>
+                  <td id="tuneNote"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" data-open="false" id="entryPanel">
+          <button
+            class="section-btn"
+            type="button"
+            aria-expanded="false"
+            aria-controls="entryBody"
+            data-target="entryPanel"
+          >
+            <div>
+              <div class="section-title">Entry text</div>
+              <div class="section-summary">
+                Copyable baseline values with advisory Depth Per Pass and stepover
+              </div>
+            </div>
+            <div class="chev">›</div>
+          </button>
+          <div class="section-body" id="entryBody">
+            <textarea id="copyBlock" spellcheck="false"></textarea>
+            <div class="actions">
+              <button class="primary" id="copyBtn" type="button">Copy text</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      let mode = "roughing";
+      let unitMode = "imperial";
+      const $ = (id) => document.getElementById(id);
+      const defaults = {
+        geometry: "endmill",
+        diameter: "0.250",
+        flutes: 2,
+        fluteLength: "0.500",
+        cutStyle: "neutral",
+        woodType: "hardwood",
+        machineType: "light",
+        cutterMaterial: "carbide",
+        feedOverride: 100,
+        rpmTrim: 0,
+        targetDepth: 0.250,
+      };
+
+      function clamp(v, min, max) {
+        return Math.max(min, Math.min(max, v));
+      }
+      function lenUnit() {
+        return unitMode === "metric" ? "mm" : "in";
+      }
+      function feedUnit() {
+        return unitMode === "metric" ? "mm/min" : "in/min";
+      }
+      function chipUnit() {
+        return unitMode === "metric" ? "mm/tooth" : "in/tooth";
+      }
+      function inToMm(v) {
+        return v * 25.4;
+      }
+      function mmToIn(v) {
+        return v / 25.4;
+      }
+      function ipmToMmpm(v) {
+        return v * 25.4;
+      }
+
+      function parseLenInput(raw) {
+        if (raw == null) return NaN;
+        let s = String(raw).trim().toLowerCase();
+        if (!s) return NaN;
+        s = s
+          .replace(/"|inches|inch|in/g, "")
+          .replace(/mm/g, "")
+          .trim();
+        if (/^[-+]?\d+(\.\d+)?$/.test(s)) return parseFloat(s);
+        if (/^[-+]?\d+\s+\d+\/\d+$/.test(s)) {
+          const [whole, frac] = s.split(/\s+/);
+          const [n, d] = frac.split("/").map(Number);
+          if (d) return parseFloat(whole) + n / d;
+        }
+        if (/^[-+]?\d+\/\d+$/.test(s)) {
+          const [n, d] = s.split("/").map(Number);
+          if (d) return n / d;
+        }
+        return NaN;
+      }
+
+      function displayLen(inches, digits = 4) {
+        const v = unitMode === "metric" ? inToMm(inches) : inches;
+        return `${v.toFixed(unitMode === "metric" ? 3 : digits)} ${lenUnit()}`;
+      }
+      function displayFeed(ipm) {
+        const v = unitMode === "metric" ? ipmToMmpm(ipm) : ipm;
+        return `${Math.round(v)} ${feedUnit()}`;
+      }
+      function displayChip(inches) {
+        const v = unitMode === "metric" ? inToMm(inches) : inches;
+        return `${v.toFixed(unitMode === "metric" ? 4 : 4)} ${chipUnit()}`;
+      }
+      function displayDepthInputLabel() {
+        const map = [
+          ["targetDepth", "Target Depth"],
+          ["radialStock", "Suggested Radial Stock to Leave"],
+          ["floorStock", "Reserved Finish Pass Depth"],
+        ];
+        map.forEach(([id, label]) => {
+          const el = document.querySelector(`label[for="${id}"]`);
+          if (el) el.textContent = `${label} (${lenUnit()})`;
+        });
+      }
+      function setLengthLabels() {
+        document.querySelector('label[for="diameter"]').textContent = `Diameter (${lenUnit()})`;
+        document.querySelector('label[for="fluteLength"]').textContent =
+          `Flute Length (${lenUnit()})`;
+      }
+
+      function normalizeDepthField(id) {
+        const el = $(id);
+        if (!el) return;
+        const raw = parseLenInput(el.value);
+        if (Number.isNaN(raw) || raw < 0) return;
+        const inches = unitMode === "metric" ? mmToIn(raw) : raw;
+        el.value = unitMode === "metric" ? inToMm(inches).toFixed(3) : inches.toFixed(4);
+      }
+
+      function normalizeLengthField(id) {
+        const el = $(id);
+        const raw = parseLenInput(el.value);
+        if (Number.isNaN(raw) || raw <= 0) return;
+        const inches = unitMode === "metric" ? mmToIn(raw) : raw;
+        el.value = unitMode === "metric" ? inToMm(inches).toFixed(3) : inches.toFixed(4);
+      }
+      function convertDepthInputs(toMode) {
+        ["targetDepth", "startDepth", "finalDepth", "radialStock", "floorStock"].forEach((id) => {
+          const el = $(id);
+          if (!el) return;
+          const current = parseLenInput(el.value);
+          if (Number.isNaN(current)) return;
+          if (toMode === "metric" && unitMode === "imperial") el.value = inToMm(current).toFixed(3);
+          if (toMode === "imperial" && unitMode === "metric") el.value = mmToIn(current).toFixed(4);
+        });
+      }
+
+      function convertLengthInputs(toMode) {
+        ["diameter", "fluteLength"].forEach((id) => {
+          const el = $(id);
+          const current = parseLenInput(el.value);
+          if (Number.isNaN(current)) return;
+          if (toMode === "metric" && unitMode === "imperial") el.value = inToMm(current).toFixed(3);
+          if (toMode === "imperial" && unitMode === "metric") el.value = mmToIn(current).toFixed(4);
+        });
+      }
+
+      function baseSFM(wood, cutterMaterial) {
+        const table = {
+          hardwood: { carbide: 1100, hss: 650 },
+          softwood: { carbide: 1350, hss: 780 },
+          plywood: { carbide: 1050, hss: 620 },
+          mdf: { carbide: 950, hss: 560 },
+        };
+        return table[wood][cutterMaterial];
+      }
+      function machineFactor(machine) {
+        return machine === "light" ? 0.85 : 1.0;
+      }
+      function geometryFactor(geometry) {
+        return { endmill: 1.0, bowltray: 1.18, ballmill: 0.82, surfacing: 1.25 }[geometry] || 1.0;
+      }
+      function cutStyleFactor(style) {
+        return (
+          {
+            neutral: 1.0,
+            upcut: 1.0,
+            downcut: 0.9,
+            compression: 0.94,
+            straight: 0.88,
+          }[style] || 1.0
+        );
+      }
+      function finishFactor(mode) {
+        return mode === "roughing" ? 1.0 : 0.78;
+      }
+      function chiploadFor(dia, geometry, cutStyle, mode, woodType, machineType) {
+        let chip;
+        if (dia <= 0.0625) chip = 0.001;
+        else if (dia <= 0.125) chip = 0.0016;
+        else if (dia <= 0.1875) chip = 0.0022;
+        else if (dia <= 0.25) chip = 0.003;
+        else if (dia <= 0.375) chip = 0.0042;
+        else if (dia <= 0.5) chip = 0.0055;
+        else chip = 0.007;
+        chip *= geometryFactor(geometry);
+        chip *= cutStyleFactor(cutStyle);
+        chip *= finishFactor(mode);
+        if (woodType === "hardwood") chip *= 0.95;
+        if (woodType === "mdf") chip *= 0.92;
+        if (machineType === "light") chip *= 0.88;
+        return Number(chip.toFixed(4));
+      }
+      function rpmFromModel(dia, woodType, cutterMaterial, geometry) {
+        const sfm = baseSFM(woodType, cutterMaterial);
+        let rpm = (sfm * 3.82) / dia;
+        if (geometry === "surfacing") rpm *= 0.92;
+        if (geometry === "bowltray" && dia >= 0.375) rpm *= 0.96;
+        return Math.round(clamp(rpm, 9000, 22000) / 100) * 100;
+      }
+      function dppFor(dia, geometry, mode, woodType, machineType) {
+        let ratio;
+        if (geometry === "endmill") ratio = mode === "roughing" ? 0.42 : 0.18;
+        else if (geometry === "ballmill") ratio = mode === "roughing" ? 0.24 : 0.1;
+        else if (geometry === "bowltray") ratio = mode === "roughing" ? 0.3 : 0.12;
+        else if (geometry === "surfacing") return mode === "roughing" ? 0.06 : 0.03;
+        else ratio = mode === "roughing" ? 0.32 : 0.14;
+        if (woodType === "hardwood") ratio *= 0.92;
+        if (machineType === "light") ratio *= 0.92;
+        return dia * ratio;
+      }
+      function stepoverPctFor(geometry, mode) {
+        if (geometry === "endmill") return mode === "roughing" ? 45 : 12;
+        if (geometry === "ballmill") return mode === "roughing" ? 28 : 8;
+        if (geometry === "bowltray") return mode === "roughing" ? 35 : 12;
+        if (geometry === "surfacing") return mode === "roughing" ? 55 : 35;
+        return mode === "roughing" ? 40 : 12;
+      }
+      function rampAngleFor(geometry, mode) {
+        if (geometry === "ballmill") return mode === "roughing" ? 3.0 : 2.5;
+        if (geometry === "bowltray") return 3.0;
+        if (geometry === "surfacing") return 3.0;
+        return mode === "roughing" ? 4.0 : 3.0;
+      }
+      function tunedStatus(chip, dia, machineType) {
+        let low = dia >= 0.375 ? 0.0038 : dia >= 0.25 ? 0.003 : 0.0018;
+        let sweetLow = dia >= 0.375 ? 0.005 : dia >= 0.25 ? 0.004 : 0.0025;
+        let sweetHigh = dia >= 0.375 ? 0.0085 : dia >= 0.25 ? 0.0065 : 0.0045;
+        if (machineType === "light") {
+          low *= 0.92;
+          sweetLow *= 0.92;
+          sweetHigh *= 0.92;
+        }
+        if (chip < low)
+          return [
+            "red",
+            "Likely too low for this cutter size",
+            "Rubbing / burning risk",
+            "Increase feed or reduce RPM until the chip load climbs out of the rubbing zone.",
+          ];
+        if (chip < sweetLow)
+          return [
+            "yellow",
+            "Usable but still conservative",
+            "Moderate heat risk",
+            "A modest feed increase may improve chip formation.",
+          ];
+        if (chip <= sweetHigh)
+          return [
+            "green",
+            "Healthier starting band",
+            "Better cutting balance",
+            "This looks more like a practical wood-routing starting point.",
+          ];
+        return [
+          "yellow",
+          "Getting aggressive",
+          "Verify machine sound and finish",
+          "Good for testing, but confirm cut quality before making it your baseline.",
+        ];
+      }
+      function statusPill(color, text) {
+        return `<span class="pill"><span class="light ${color}"></span>${text}</span>`;
+      }
+      function setOpen(panelId, open) {
+        const panel = $(panelId);
+        panel.dataset.open = open ? "true" : "false";
+        panel.querySelector(".section-btn").setAttribute("aria-expanded", open ? "true" : "false");
+      }
+      function updateUnitButtons() {
+        $("unitImperial").classList.toggle("active", unitMode === "imperial");
+        $("unitMetric").classList.toggle("active", unitMode === "metric");
+      }
+      function updateSummaries(base, tuned) {
+        $("stage1Summary").textContent =
+          `${$("woodType").selectedOptions[0].textContent} · ${$("geometry").selectedOptions[0].textContent} · ${displayLen(base.dia, 4)} · ${displayFeed(base.feed)} @ ${base.rpm} RPM`;
+        $("stage2Summary").textContent =
+          `${displayFeed(tuned.feed)} · ${tuned.rpm} RPM · ${displayChip(tuned.chip)}`;
+      }
+      function resetRuntimeToBaseline() {
+        $("feedOverride").value = 100;
+        $("rpmTrim").value = 0;
+      }
+
+      function setMetricVisibility(id, visible) {
+        const el = $(id);
+        if (!el) return;
+        el.classList.toggle("hidden", !visible);
+      }
+
+      function syncStage15DepthFields() {
+        const raw = parseLenInput($("targetDepth")?.value);
+        if (Number.isNaN(raw) || raw < 0) return;
+        const targetDepth = unitMode === "metric" ? mmToIn(raw) : raw;
+        if ($("startDepth")) $("startDepth").value = unitMode === "metric" ? inToMm(0).toFixed(3) : (0).toFixed(4);
+        if ($("finalDepth")) $("finalDepth").value = unitMode === "metric" ? inToMm(targetDepth).toFixed(3) : targetDepth.toFixed(4);
+      }
+
+      function updateStage15CardVisibility() {
+        const modeSel = document.querySelector('input[name="passMode"]:checked')?.value || "equal";
+        const isFinishLast = modeSel === "finishlast";
+        setMetricVisibility("cardPassCount", true);
+        setMetricVisibility("cardEqualDoc", !isFinishLast);
+        setMetricVisibility("cardRoughDoc", isFinishLast);
+        setMetricVisibility("cardFinishDoc", isFinishLast);
+        setMetricVisibility("cardTotalDepth", false);
+        setMetricVisibility("cardRecommendedDoc", false);
+      }
+
+      function calcPassPlan(dpp) {
+        const startRaw = parseLenInput($("startDepth").value);
+        const finalRaw = parseLenInput($("finalDepth").value);
+        const startDepth = unitMode === "metric" ? mmToIn(startRaw) : startRaw;
+        const finalDepth = unitMode === "metric" ? mmToIn(finalRaw) : finalRaw;
+        if (Number.isNaN(startDepth) || Number.isNaN(finalDepth) || finalDepth < startDepth) {
+          $("totalDepthOut").textContent = displayLen(0);
+          $("passCountOut").textContent = "0";
+          $("equalDocOut").textContent = displayLen(0);
+          $("roughDocOut").textContent = displayLen(0);
+          $("finishDocOut").textContent = displayLen(0);
+          $("mmDocOut").textContent = displayLen(0);
+          $("passPlanNote").textContent =
+            "Enter Start Depth and Final Depth with Final Depth greater than or equal to Start Depth.";
+          $("passSummary").textContent = "Equal-pass planning for operation depth";
+          return;
+        }
+        const totalDepth = Math.max(0, finalDepth - startDepth);
+        if (totalDepth === 0) {
+          $("totalDepthOut").textContent = displayLen(0);
+          $("passCountOut").textContent = "0";
+          $("equalDocOut").textContent = displayLen(0);
+          $("roughDocOut").textContent = displayLen(0);
+          $("finishDocOut").textContent = displayLen(0);
+          $("mmDocOut").textContent = displayLen(0);
+          $("passPlanNote").textContent =
+            "Start Depth and Final Depth are equal, so no cutting passes are required.";
+          $("passSummary").textContent = "0 passes across 0 depth";
+          return;
+        }
+        const modeSel = document.querySelector('input[name="passMode"]:checked').value;
+        updateStage15CardVisibility();
+        const equalPasses = Math.max(1, Math.ceil(totalDepth / dpp));
+        const equalDoc = totalDepth / equalPasses;
+        let roughDoc = equalDoc,
+          finishDoc = equalDoc,
+          passCount = equalPasses,
+          mmDoc = equalDoc;
+        let note = "Use one Depth Per Pass value across the full depth.";
+        if (modeSel === "finishlast" && totalDepth > dpp) {
+          const targetFinish = Math.max(
+            Math.min(dpp * 0.4, totalDepth * 0.5),
+            Math.min(dpp * 0.2, totalDepth)
+          );
+          const roughableDepth = Math.max(0, totalDepth - targetFinish);
+          const roughPasses = Math.max(1, Math.floor(roughableDepth / dpp));
+          roughDoc = roughPasses > 0 ? roughableDepth / roughPasses : roughableDepth;
+          finishDoc = totalDepth - roughDoc * roughPasses;
+          if (finishDoc <= 0) {
+            roughDoc = equalDoc;
+            finishDoc = equalDoc;
+            passCount = equalPasses;
+            mmDoc = equalDoc;
+            note =
+              "Depth was too small to create a useful finish-last strategy, so equal passes are recommended.";
+          } else {
+            passCount = roughPasses + 1;
+            mmDoc = roughDoc;
+            note = `Use Depth Per Pass = ${displayLen(roughDoc)} for roughing passes, then finish the remaining ${displayLen(finishDoc)} with a final pass.`;
+          }
+        }
+        $("totalDepthOut").textContent = displayLen(totalDepth);
+        $("passCountOut").textContent = String(passCount);
+        $("equalDocOut").textContent = displayLen(equalDoc);
+        $("roughDocOut").textContent = displayLen(roughDoc);
+        $("finishDocOut").textContent = displayLen(finishDoc);
+        $("mmDocOut").textContent = displayLen(mmDoc);
+        $("passPlanNote").textContent = note;
+        $("passSummary").textContent = `${passCount} passes across ${displayLen(totalDepth)}`;
+      }
+
+      function syncCleanupFromPassPlan(base) {
+        if (!$("floorStock")) return;
+        const reserved = Math.max(0, base.finishDoc || 0);
+        $("floorStock").value = unitMode === "metric" ? inToMm(reserved).toFixed(3) : reserved.toFixed(4);
+        if ($("radialStock")) {
+          const raw = parseLenInput($("radialStock").value);
+          if (Number.isNaN(raw) || raw <= 0) {
+            const suggested = suggestedRadialStockValue(base);
+            $("radialStock").value = unitMode === "metric" ? inToMm(suggested).toFixed(3) : suggested.toFixed(4);
+          }
+        }
+      }
+
+      function docCaps(machineType, dia) {
+        if (machineType === "light")
+          return { rough: 0.5 * dia, floor: 1.0 * dia, wall: 0.75 * dia };
+        return { rough: 0.75 * dia, floor: 1.25 * dia, wall: 1.0 * dia };
+      }
+
+      function suggestedRadialStockValue(base) {
+        let ratio;
+        if (base.machineType === "light") ratio = 0.12;
+        else ratio = 0.08;
+        if (base.dia <= 0.125) ratio *= 0.8;
+        else if (base.dia >= 0.375) ratio *= 1.1;
+        return Math.max(0.001, base.dia * ratio);
+      }
+
+      function calcCleanupModel(base) {
+        const cleanupType = $("cleanupType").value;
+        const finishMode = $("finishMode").value;
+        const radialRaw = parseLenInput($("radialStock").value);
+        const axialRaw = parseLenInput($("floorStock").value);
+        const radialSuggestion = suggestedRadialStockValue(base);
+        const radialStock = Number.isNaN(radialRaw)
+          ? radialSuggestion
+          : unitMode === "metric"
+            ? mmToIn(radialRaw)
+            : radialRaw;
+        const reservedFinish = unitMode === "metric" ? mmToIn(axialRaw) : axialRaw;
+        const caps = docCaps(base.machineType, base.dia);
+        const engagement = !Number.isNaN(radialStock) && base.dia > 0 ? radialStock / base.dia : 0;
+        let suggestedDoc,
+          suggestedFeed = base.feed,
+          suggestedRpm = base.rpm,
+          warning = "",
+          note = "";
+        if (cleanupType === "axial") {
+          suggestedDoc = reservedFinish || base.finishDoc || base.dpp;
+          note = "Axial cleanup is downstream from Stage 1.5 and uses the reserved finish pass directly.";
+          $("cleanupEngagementOut").textContent = "";
+          $("cleanupWarning").textContent = "";
+        } else if (cleanupType === "radial") {
+          let mult = base.machineType === "light" ? 1.15 : 1.25;
+          if (finishMode === "aggressive") mult += 0.1;
+          suggestedDoc = Math.min(base.dpp * mult, base.finalDepth, caps.wall);
+          note =
+            "Suggested radial stock to leave is a conservative starting value for this cutter and machine class.";
+          if (engagement < 0.1 && finishMode === "aggressive") {
+            suggestedFeed = base.feed * 1.05;
+            note += " Applied a very small feed-rate increase for chip thinning.";
+          }
+          const passes = Math.max(1, Math.ceil(base.finalDepth / Math.max(suggestedDoc, 0.0001)));
+          if (base.finalDepth >= 2.0 * base.dpp) {
+            warning = "Full-height radial cleanup may chatter; multiple passes are recommended.";
+          }
+          $("cleanupEngagementOut").textContent = `${(engagement * 100).toFixed(1)}%`;
+          $("cleanupWarning").textContent =
+            warning || "Radial cleanup guidance is based on the suggested stock-to-leave starting value shown above.";
+        }
+        const passes =
+          cleanupType === "axial"
+            ? 1
+            : Math.max(1, Math.ceil(base.finalDepth / Math.max(suggestedDoc, 0.0001)));
+        $("cleanupDocOut").textContent = displayLen(suggestedDoc);
+        $("cleanupPassCountOut").textContent = String(passes);
+        $("cleanupFeedOut").textContent = displayFeed(suggestedFeed);
+        $("cleanupRpmOut").textContent = `${Math.round(suggestedRpm)} RPM`;
+        $("cleanupNote").textContent = note;
+      }
+
+      function calc(resetRuntime = false) {
+        const diaRaw = parseLenInput($("diameter").value);
+        const fluteLenRaw = parseLenInput($("fluteLength").value);
+        const dia = unitMode === "metric" ? mmToIn(diaRaw) : diaRaw;
+        const fluteLength = unitMode === "metric" ? mmToIn(fluteLenRaw) : fluteLenRaw;
+        const flutes = parseFloat($("flutes").value) || 2;
+        const geometry = $("geometry").value;
+        const cutStyle = $("cutStyle").value;
+        const woodType = $("woodType").value;
+        const cutterMaterial = $("cutterMaterial").value;
+        const machineType = $("machineType").value;
+
+        if (Number.isNaN(dia) || Number.isNaN(fluteLength) || dia <= 0 || fluteLength <= 0) {
+          return;
+        }
+
+        const chip = chiploadFor(dia, geometry, cutStyle, mode, woodType, machineType);
+        const rpm = rpmFromModel(dia, woodType, cutterMaterial, geometry);
+        const feed = rpm * flutes * chip * machineFactor(machineType);
+        const plunge = Math.max(
+          unitMode === "metric" ? 150 : 8,
+          feed * (mode === "roughing" ? 0.3 : 0.22)
+        );
+        const ramp = plunge * (mode === "roughing" ? 0.68 : 0.58);
+        const dpp = Math.min(dppFor(dia, geometry, mode, woodType, machineType), fluteLength * 0.8);
+        const stepPct = stepoverPctFor(geometry, mode);
+        const stepOver = dia * (stepPct / 100);
+        const rampAngle = rampAngleFor(geometry, mode);
+
+        if (resetRuntime) resetRuntimeToBaseline();
+
+        $("feedOut").textContent = displayFeed(feed);
+        $("rpmOut").textContent = rpm + " RPM";
+        $("chipOut").textContent = displayChip(chip);
+        $("plungeOut").textContent = displayFeed(plunge);
+        $("rampOut").textContent = displayFeed(ramp);
+        $("rampAngleOut").textContent = `${rampAngle.toFixed(1)}°`;
+        $("dppOut").textContent = displayLen(dpp);
+        $("stepOverOut").textContent = displayLen(stepOver);
+        $("stepPctOut").textContent = `${stepPct}%`;
+        calcPassPlan(dpp);
+        // Calculate finishDoc for cleanup model
+        syncStage15DepthFields();
+        const targetDepthCalc =
+          unitMode === "metric"
+            ? mmToIn(parseLenInput($("targetDepth").value))
+            : parseLenInput($("targetDepth").value);
+        const finalDepthCalc = Math.max(0, targetDepthCalc);
+        const totalDepthCalc = Math.max(0, targetDepthCalc);
+        const modeSel = document.querySelector('input[name="passMode"]:checked').value;
+        let finishDoc = dpp; // default
+        if (modeSel === "finishlast" && totalDepthCalc > dpp) {
+          const targetFinish = Math.max(
+            Math.min(dpp * 0.4, totalDepthCalc * 0.5),
+            Math.min(dpp * 0.2, totalDepthCalc)
+          );
+          finishDoc = targetFinish;
+        }
+        const cleanupBase = {
+          dia,
+          dpp,
+          feed,
+          rpm,
+          machineType,
+          finalDepth: finalDepthCalc || dpp,
+          finishDoc,
+        };
+        syncCleanupFromPassPlan(cleanupBase);
+        calcCleanupModel(cleanupBase);
+
+        const feedPct = parseFloat($("feedOverride").value) / 100;
+        const rpmDelta = parseFloat($("rpmTrim").value);
+        const tunedFeed = feed * feedPct;
+        const tunedRpm = Math.max(8000, Math.round(rpm + rpmDelta));
+        const tunedChip = tunedFeed / (tunedRpm * flutes);
+        const tunedPlunge = plunge * (0.82 + (feedPct - 0.7) * 0.45);
+        const tunedRamp = ramp * (0.82 + (feedPct - 0.7) * 0.45);
+        const tunedRampAngle = rampAngle;
+        const tunedStepOver = stepOver;
+        const tunedStepPct = stepPct;
+
+        $("tunedFeedOut").textContent = displayFeed(tunedFeed);
+        $("tunedPlungeOut").textContent = displayFeed(tunedPlunge);
+        $("tunedRampOut").textContent = displayFeed(tunedRamp);
+        $("tunedRampAngleOut").textContent = `${tunedRampAngle.toFixed(1)}°`;
+        $("tunedRpmOut").textContent = tunedRpm + " RPM";
+        $("tunedChipOut").textContent = displayChip(tunedChip);
+        $("tunedStepOverOut").textContent = displayLen(tunedStepOver);
+        $("tunedStepPctOut").textContent = `${tunedStepPct}%`;
+        $("feedOverrideOut").textContent = Math.round(feedPct * 100) + "%";
+
+        const [color, chipText, heatText, note] = tunedStatus(tunedChip, dia, machineType);
+        $("chipStatus").innerHTML = statusPill(color, chipText);
+        $("heatStatus").innerHTML = statusPill(color === "green" ? "green" : color, heatText);
+        $("tuneNote").textContent = note;
+
+        $("copyBlock").value = [
+          `Mode: ${mode === "roughing" ? "Roughing" : "Finish"}`,
+          `Units: ${unitMode === "metric" ? "Metric" : "Imperial"}`,
+          `Geometry: ${$("geometry").selectedOptions[0].textContent}`,
+          `Machine: ${$("machineType").selectedOptions[0].textContent}`,
+          `Wood Type: ${$("woodType").selectedOptions[0].textContent}`,
+          `Diameter: ${displayLen(dia)}`,
+          `Flute Length: ${displayLen(fluteLength)}`,
+          `# of Flutes: ${flutes}`,
+          "",
+          "Baseline feeds and speeds",
+          `Feed Rate: ${displayFeed(feed)}`,
+          `Plunge Rate: ${displayFeed(plunge)}`,
+          `Ramp Feed: ${displayFeed(ramp)}`,
+          `Ramp Angle: ${rampAngle.toFixed(1)}°`,
+          `Spindle Speed (RPM): ${rpm}`,
+          `Chip Load: ${displayChip(chip)}`,
+          `Depth Per Pass: ${displayLen(dpp)}`,
+          `Stepover: ${displayLen(stepOver)}`,
+          `Stepover (%): ${stepPct}%`,
+        ].join("\n");
+
+        updateSummaries({ dia, feed, rpm }, { feed: tunedFeed, rpm: tunedRpm, chip: tunedChip });
+      }
+
+      document.querySelectorAll(".section-btn").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          const panelId = btn.dataset.target;
+          const panel = $(panelId);
+          const open = panel.dataset.open === "true";
+          setOpen(panelId, !open);
+        })
+      );
+      document.querySelectorAll(".tab").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          mode = btn.dataset.mode;
+          document
+            .querySelectorAll(".tab")
+            .forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+          calc();
+        })
+      );
+      $("unitImperial").addEventListener("click", () => {
+        if (unitMode === "imperial") return;
+        convertLengthInputs("imperial");
+        convertDepthInputs("imperial");
+        unitMode = "imperial";
+        setLengthLabels();
+        displayDepthInputLabel();
+        updateUnitButtons();
+        calc(true);
+      });
+      $("unitMetric").addEventListener("click", () => {
+        if (unitMode === "metric") return;
+        convertLengthInputs("metric");
+        convertDepthInputs("metric");
+        unitMode = "metric";
+        setLengthLabels();
+        displayDepthInputLabel();
+        updateUnitButtons();
+        calc(true);
+      });
+      ["geometry", "flutes", "cutStyle", "woodType", "machineType", "cutterMaterial"].forEach(
+        (id) => {
+          $(id).addEventListener("input", () => calc(true));
+          $(id).addEventListener("change", () => calc(true));
+        }
+      );
+      ["diameter", "fluteLength"].forEach((id) => {
+        $(id).addEventListener("input", () => calc(true));
+        $(id).addEventListener("change", () => {
+          normalizeLengthField(id);
+          calc(true);
+        });
+        $(id).addEventListener("blur", () => {
+          normalizeLengthField(id);
+          calc(true);
+        });
+      });
+      ["startDepth", "finalDepth", "radialStock", "floorStock"].forEach((id) => {
+        $(id).addEventListener("input", () => calc(true));
+        $(id).addEventListener("change", () => {
+          normalizeDepthField(id);
+          calc(true);
+        });
+        $(id).addEventListener("blur", () => {
+          normalizeDepthField(id);
+          calc(true);
+        });
+      });
+      function toggleCleanupVisibility() {
+        const isFinishLast =
+          document.querySelector('input[name="passMode"]:checked').value === "finishlast";
+        const cleanupElements = document.querySelectorAll(
+          '.section-title[style*="font-size: 13px"] ~ .hint, .section-title[style*="font-size: 13px"] ~ .grid, .section-title[style*="font-size: 13px"] ~ .results, .section-title[style*="font-size: 13px"] ~ table'
+        );
+        cleanupElements.forEach((el) => {
+          el.style.display = isFinishLast ? "block" : "none";
+        });
+        // Also hide the spacer
+        const spacer = document.querySelector(
+          '.section-title[style*="font-size: 13px"]'
+        ).previousElementSibling;
+        if (spacer && spacer.style.height === "12px") {
+          spacer.style.display = isFinishLast ? "block" : "none";
+        }
+      }
+      document.querySelectorAll('input[name="passMode"]').forEach((el) =>
+        el.addEventListener("change", () => {
+          updateStage15CardVisibility();
+          toggleCleanupVisibility();
+          calc(true);
+        })
+      );
+      ["cleanupType", "finishMode"].forEach((id) =>
+        $(id).addEventListener("change", () => calc(true))
+      );
+      $("feedOverride").addEventListener("input", () => calc(false));
+      $("feedOverride").addEventListener("change", () => calc(false));
+      $("rpmTrim").addEventListener("input", () => calc(false));
+      $("rpmTrim").addEventListener("change", () => calc(false));
+      $("calcBtn").addEventListener("click", () => calc(true));
+      $("resetBtn").addEventListener("click", () => {
+        Object.entries(defaults).forEach(([k, v]) => ($(k).value = v));
+        unitMode = "imperial";
+        mode = "roughing";
+        document
+          .querySelectorAll(".tab")
+          .forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+        setLengthLabels();
+        displayDepthInputLabel();
+        updateUnitButtons();
+        calc(true);
+      });
+      $("toStage2Btn").addEventListener("click", () => {
+        setOpen("stage1Panel", false);
+        setOpen("stage2Panel", true);
+      });
+      $("copyBtn").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText($("copyBlock").value);
+        } catch (e) {}
+      });
+      setLengthLabels();
+      updateUnitButtons();
+      (function () {
+        var P = [
+          "geometry",
+          "cutStyle",
+          "woodType",
+          "machineType",
+          "cutterMaterial",
+          "cleanupType",
+          "finishMode",
+          "diameter",
+          "flutes",
+          "fluteLength",
+          "targetDepth",
+          "startDepth",
+          "finalDepth",
+          "radialStock",
+          "floorStock",
+          "feedOverride",
+          "rpmTrim",
+        ];
+        function saveState() {
+          P.forEach(function (id) {
+            var el = $(id);
+            if (el) localStorage.setItem("cstr_" + id, el.value);
+          });
+          localStorage.setItem("cstr_unit", unitMode);
+          localStorage.setItem("cstr_mode", mode);
+        }
+        function restoreState() {
+          // Restore all values from localStorage
+          P.forEach(function (id) {
+            var el = $(id);
+            var v = localStorage.getItem("cstr_" + id);
+            if (el && v !== null) {
+              if (id === "cleanupType") {
+                // Map old values to new
+                if (v === "wall") v = "radial";
+                else if (v === "floor") v = "axial";
+                else if (v === "rough") v = "radial"; // default
+              }
+              el.value = v;
+            }
+          });
+          // Restore unit and mode FIRST
+          var u = localStorage.getItem("cstr_unit");
+          if (u === "metric") {
+            unitMode = "metric";
+          } else {
+            unitMode = "imperial";
+          }
+          setLengthLabels();
+          displayDepthInputLabel();
+          updateUnitButtons();
+          var m = localStorage.getItem("cstr_mode");
+          if (m === "finish") {
+            mode = "finish";
+            document.querySelectorAll(".tab").forEach(function (b) {
+              b.classList.toggle("active", b.dataset.mode === mode);
+            });
+          } else {
+            mode = "roughing";
+            document.querySelectorAll(".tab").forEach(function (b) {
+              b.classList.toggle("active", b.dataset.mode === mode);
+            });
+          }
+          // Normalize all length and depth fields to current unit
+          ["targetDepth", "startDepth", "finalDepth", "radialStock", "floorStock"].forEach(function (id) {
+            normalizeDepthField(id);
+          });
+          if (!localStorage.getItem("cstr_targetDepth")) {
+            const finalRaw = parseLenInput($("finalDepth").value);
+            if (!Number.isNaN(finalRaw) && $("targetDepth")) {
+              const finalDepth = unitMode === "metric" ? mmToIn(finalRaw) : finalRaw;
+              $("targetDepth").value = unitMode === "metric" ? inToMm(finalDepth).toFixed(3) : finalDepth.toFixed(4);
+            }
+          }
+          ["diameter", "fluteLength"].forEach(function (id) {
+            normalizeLengthField(id);
+          });
+          // Recalculate all derived values
+          calc(true);
+        }
+        var _calc = calc;
+        calc = function (r) {
+          _calc(r);
+          saveState();
+        };
+        restoreState();
+        updateStage15CardVisibility();
+        toggleCleanupVisibility();
+      })();
+      // Remove duplicate calc(true); here, as restoreState now triggers it
+    </script>
+  </body>
+</html>
